@@ -1,0 +1,243 @@
+<html>
+<head>
+    <title>DHT11 dashboard</title>
+    <style type="text/css">
+    body{
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow:hidden;
+        background:#000;
+    }
+    .box{
+        width: 800px;
+        height: 300px;
+        border: none; 
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        font-size:80px;
+    }
+    #tem,#hum{
+        font-size:120px;
+    }
+
+    .time {
+      height:200px;
+      width:480px;
+      text-align:center;
+    }
+    .time .digit {
+      width:120px;
+      height:200px;
+      margin:0 5px;
+      position:relative;
+      display:inline-block;
+    }
+
+
+    .digit .segment {
+      /*background:#00FF00;*/
+      border-radius:5px;
+      position:absolute;
+      opacity:0.1;
+      transition:opacity 0.2s;
+      -webkit-transition:opacity 0.2s;
+      -ms-transition:opacity 0.2s;
+      -moz-transition:opacity 0.2s;
+      -o-transition:opacity 0.2s;
+    }
+
+    .digit .segment.on, .separator {
+      opacity:1;
+      box-shadow:0 0 30px rgba(0,255,0,0.1);
+      transition:opacity 0s;
+      -webkit-transition:opacity 0s;
+      -ms-transition:opacity 0s;
+      -moz-transition:opacity 0s;
+      -o-transition:opacity 0s;
+    }
+
+    .time .separator {
+      width:20px;
+      height:20px;
+      /*background:#00FF00;*/
+      border-radius:50%;
+      display:inline-block;
+      position:relative;
+      top:-90px;
+    }
+
+
+    .digit .segment:nth-child(1) {
+      top:10px;
+      left:20px;
+      right:20px;
+      height:10px;
+    }
+
+    .digit .segment:nth-child(2) {
+      top:20px;
+      right:10px;
+      width:10px;
+      height:75px;
+      height:calc(50% - 25px);
+    }
+
+    .digit .segment:nth-child(3) {
+      bottom:20px;
+      right:10px;
+      width:10px;
+      height:75px;
+      height:calc(50% - 25px);
+    }
+
+    .digit .segment:nth-child(4) {
+      bottom:10px;
+      right:20px;
+      height:10px;
+      left:20px;
+    }
+
+    .digit .segment:nth-child(5) {
+      bottom:20px;
+      left:10px;
+      width:10px;
+      height:75px;
+      height:calc(50% - 25px);
+    }
+
+    .digit .segment:nth-child(6) {
+      top:20px;
+      left:10px;
+      width:10px;
+      height:75px;
+      height:calc(50% - 25px);
+    }
+
+    .digit .segment:nth-child(7) {
+      bottom:95px;
+      bottom:calc(50% - 5px);
+      right:20px;
+      left:20px;
+      height:10px;
+    }
+    </style>
+</head>
+<body>
+<div class="box">
+<div class="time">
+		<div class="digit">
+			<div class="segment" style="background: red;"></div>
+			<div class="segment" style="background: red;"></div>
+			<div class="segment" style="background: red;"></div>
+			<div class="segment" style="background: red;"></div>
+			<div class="segment" style="background: red;"></div>
+			<div class="segment" style="background: red;"></div>
+			<div class="segment" style="background: red;"></div>
+		</div>
+		<div class="digit">
+			<div class="segment" style="background: red;"></div>
+			<div class="segment" style="background: red;"></div>
+			<div class="segment" style="background: red;"></div>
+			<div class="segment" style="background: red;"></div>
+			<div class="segment" style="background: red;"></div>
+			<div class="segment" style="background: red;"></div>
+			<div class="segment" style="background: red;"></div>
+		</div>
+        <div class="digit" style="color: red;float: right;font-size: 130px;line-height: 130px;">℃</div>
+</div>
+</div>
+<script src="mqttws31.js"></script>
+<script>
+    var number=new Array()
+    number[0]=[1,1,1,1,1,1,0]
+    number[1]=[0,1,1,0,0,0,0]
+    number[2]=[1,1,0,1,1,0,1]
+    number[3]=[1,1,1,1,0,0,1]
+    number[4]=[0,1,1,0,0,1,1]
+    number[5]=[1,0,1,1,0,1,1]
+    number[6]=[1,0,1,1,1,1,1]
+    number[7]=[1,1,1,0,0,0,0]
+    number[8]=[1,1,1,1,1,1,1]
+    number[9]=[1,1,1,1,0,1,1]
+    function set_num(num){
+        a=0;
+        b=0;
+        if (num>=10){
+            a = parseInt(num/10);
+            b = num%10
+        }else{
+            a = 0;
+            b = num;
+        }
+        set_a(a);
+        set_b(b);
+    }
+    function set_a(n){
+        segments=document.getElementsByClassName("digit")[0].getElementsByClassName("segment");
+        for(i=0;i<7;i++){
+           if(number[n][i]==1){
+                if(segments[i].getAttribute("class")=="segment"){
+                    segments[i].setAttribute("class","segment on");
+                }
+           }else{
+                if(segments[i].getAttribute("class")=="segment on"){
+                    segments[i].setAttribute("class","segment");
+                }
+           }
+        }
+    }
+    function set_b(n){
+        segments=document.getElementsByClassName("digit")[1].getElementsByClassName("segment");
+        for(i=0;i<7;i++){
+           if(number[n][i]==1){
+                if(segments[i].getAttribute("class")=="segment"){
+                    segments[i].setAttribute("class","segment on");
+                }
+           }else{
+                if(segments[i].getAttribute("class")=="segment on"){
+                    segments[i].setAttribute("class","segment");
+                }
+           }
+        }
+    }
+    
+</script>
+<script>
+    client = new Paho.MQTT.Client("broker.hivemq.com", 8000, "dht-dashboard");
+    client.onConnectionLost = onConnectionLost;
+    client.onMessageArrived = onMessageArrived;
+    client.connect({onSuccess:onConnect});
+    function onConnect() {
+      // Once a connection has been made, make a subscription and send a message.
+      console.log("onConnect");
+      client.subscribe("/iot/dht11/tem");
+      client.subscribe("/iot/dht11/hum");
+      //message = new Paho.MQTT.Message("Hello");
+      //message.destinationName = "/World";
+      //client.send(message);
+    };
+    function onConnectionLost(responseObject) {
+      if (responseObject.errorCode !== 0)
+        console.log("onConnectionLost:"+responseObject.errorMessage);
+    };
+    function onMessageArrived(message) {
+      // If the transmitted data is non-UTF8 formatted data, do not use payloadString
+      // It will throw an error from parseUTF8. use payloadBytes instead.
+      console.dir(message);
+      if(message.destinationName=="/iot/dht11/tem"){
+        num = message.payloadString;
+        set_num(num);
+      }
+      if(message.destinationName=="/iot/dht11/hum"){
+        //hum.innerHTML=message.payloadString;
+      }
+      
+    };
+</script>
+</body>
+</html>
